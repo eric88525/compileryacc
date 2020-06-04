@@ -103,16 +103,17 @@ IDclass *strConst(string *val)
 	return c;
 }
 
-/*IDclass operator + (IDclass lhs, const IDclass& rhs)
+IDclass operator + (IDclass lhs, const IDclass& rhs)
 {
 	IDclass c = IDclass();
 	if(!(lhs.init && rhs.init))
 		return c;
 	switch(c.idType)
 	{
-		case intType: c.idData.ival=(lhs.ival + rhs.ival); break;
-		case realType: cidData.fval=(lhs.fval + rhs.fval); break;
+		case intType:  c.idData.ival = (lhs.idData.ival + rhs.idData.ival); break;
+		case realType: c.idData.fval = (lhs.idData.fval + rhs.idData.fval); break;
 	}
+	c.init = true;
 	return c;
 }
 
@@ -123,9 +124,10 @@ IDclass operator - (IDclass lhs, const IDclass& rhs)
 		return c;
 	switch(c.idType)
 	{
-		case intType: c.idData.ival=(lhs.idData.ival - rhs.idData.ival); break;
+		case intType:  c.idData.ival=(lhs.idData.ival - rhs.idData.ival); break;
 		case realType: c.idData.fval=(lhs.idData.fval - rhs.idData.fval); break;
 	}
+	c.init = true;
 	return c;
 }
 
@@ -136,9 +138,10 @@ IDclass operator * (IDclass lhs, const IDclass& rhs)
 		return c;
 	switch(c.idType)
 	{
-		case intType: c.idData.ival=(lhs.idData.ival * rhs.idData.ival); break;
+		case intType:  c.idData.ival=(lhs.idData.ival * rhs.idData.ival); break;
 		case realType: c.idData.fval=(lhs.idData.fval * rhs.idData.fval); break;
 	}
+	c.init = true;
 	return c;
 }
 
@@ -149,22 +152,23 @@ IDclass operator / (IDclass lhs, const IDclass& rhs)
 		return c;
 	switch(c.idType)
 	{
-		case intType: c.idData.ival=(lhs.idData.ival / rhs.idData.ival); break;
+		case intType:  c.idData.ival=(lhs.idData.ival / rhs.idData.ival); break;
 		case realType: c.idData.fval=(lhs.idData.fval / rhs.idData.fval); break;
 	}
+	c.init = true;
 	return c;
 }
-
+/*
 IDclass operator < (IDclass lhs, const IDclass& rhs)
 {
-	IDclass c = IDclass(Boolean);
+	IDclass c = IDclass();
 	if(!(lhs.init && rhs.init))
 		return c;
 	switch()
 	{
-		case intType: c.set_boolean(lhs.ival < rhs.ival); break;
-		case realType: c.set_boolean(lhs.fval < rhs.fval); break;
-		case Boolean: c.set_boolean(lhs.bval < rhs.bval); break;
+		case intType:  c.idData.bval(lhs.ival < rhs.ival); break;
+		case realType: c.idData.bval(lhs.fval < rhs.fval); break;
+		case boolType: c.idData.bval(lhs.bval < rhs.bval); break;
 	}
 	
 	return c;
@@ -172,84 +176,84 @@ IDclass operator < (IDclass lhs, const IDclass& rhs)
 
 IDclass operator > (IDclass lhs, const IDclass& rhs)
 {
-	IDclass c = IDclass(Boolean);
+	IDclass c = IDclass();
 	if(!(lhs.init && rhs.init))
 		return c;
 	switch()
 	{
-		case intType: c.set_boolean(lhs.ival > rhs.ival); break;
-		case realType: c.set_boolean(lhs.fval > rhs.fval); break;
-		case Boolean: c.set_boolean(lhs.bval > rhs.bval); break;
+		case intType:  c.idData.bval(lhs.ival > rhs.ival); break;
+		case realType: c.idData.bval(lhs.fval > rhs.fval); break;
+		case boolType: c.idData.bval(lhs.bval > rhs.bval); break;
 	}
 	return c;
 }
 
 IDclass operator <= (IDclass lhs, const IDclass& rhs)
 {
-	IDclass c = IDclass(Boolean);
+	IDclass c = IDclass();
 	if(!(lhs.init && rhs.init))
 		return c;
 	switch()
 	{
-		case intType: c.set_boolean(lhs.ival <= rhs.ival); break;
-		case realType: c.set_boolean(lhs.fval <= rhs.fval); break;
-		case Boolean: c.set_boolean(lhs.bval <= rhs.bval); break;
+		case intType:  c.idData.bval(lhs.ival <= rhs.ival); break;
+		case realType: c.idData.bval(lhs.fval <= rhs.fval); break;
+		case boolType: c.idData.bval(lhs.bval <= rhs.bval); break;
 	}
 	return c;
 }
 
 IDclass operator == (IDclass lhs, const IDclass& rhs)
 {
-	IDclass c = IDclass(Boolean);
+	IDclass c = IDclass();
 	if(!(lhs.init && rhs.init))
 		return c;
 	switch()
 	{
-		case intType: c.set_boolean(lhs.ival == rhs.ival); break;
-		case realType: c.set_boolean(lhs.fval == rhs.fval); break;
-		case Boolean: c.set_boolean(lhs.bval == rhs.bval); break;
+		case intType:  c.idData.bval(lhs.ival == rhs.ival); break;
+		case realType: c.idData.bval(lhs.fval == rhs.fval); break;
+		case boolType: c.idData.bval(lhs.bval == rhs.bval); break;
 	}
 	return c;
 }
 
 IDclass operator >= (IDclass lhs, const IDclass& rhs)
 {
-	IDclass c = IDclass(Boolean);
+	IDclass c = IDclass();
 	if(!(lhs.init && rhs.init))
 		return c;
 	switch()
 	{
-		case intType: c.set_boolean(lhs.ival >= rhs.ival); break;
-		case realType: c.set_boolean(lhs.fval >= rhs.fval); break;
-		case Boolean: c.set_boolean(lhs.bval >= rhs.bval); break;
+		case intType: c.idData.bval(lhs.ival >= rhs.ival); break;
+		case realType: c.idData.bval(lhs.fval >= rhs.fval); break;
+		case boolType: c.idData.bval(lhs.bval >= rhs.bval); break;
 	}
 	return c;
 }
 
 IDclass operator != (IDclass lhs, const IDclass& rhs)
 {
-	IDclass c = IDclass(Boolean);
+	IDclass c = IDclass();
 	if(!(lhs.init && rhs.init))
 		return c;
 	switch()
 	{
-		case intType: c.set_boolean(lhs.ival != rhs.ival); break;
-		case realType: c.set_boolean(lhs.fval != rhs.fval); break;
-		case Boolean: c.set_boolean(lhs.bval != rhs.bval); break;
+		case intType: c.idData.bval(lhs.ival != rhs.ival); break;
+		case realType: c.idData.bval(lhs.fval != rhs.fval); break;
+		case boolType: c.idData.bval(lhs.bval != rhs.bval); break;
 	}
 	return c;
 }
 
 IDclass operator && (IDclass lhs, const IDclass& rhs)
 {
-	IDclass c = IDclass(Boolean);
+	IDclass c = IDclass();
 	if(!(lhs.init && rhs.init))
 		return c;
 	switch()
 	{
-		case intType: c.set_boolean(lhs.ival != rhs.ival); break;
-		case realType: c.set_boolean(lhs.fval != rhs.fval); break;
-		case Boolean: c.set_boolean(lhs.bval != rhs.bval); break;
+		case intType: c.idData.bval(lhs.ival != rhs.ival); break;
+		case realType: c.idData.bval(lhs.fval != rhs.fval); break;
+		case boolType: c.idData.bval(lhs.bval != rhs.bval); break;
 	}
 	return c;
 }*/

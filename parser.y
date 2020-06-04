@@ -346,7 +346,7 @@ expression              : ID
                           	if (c == NULL) yyerror("undeclared identifier");
                           	else if (c->idType != arrayType) yyerror("not array type");
                           	else if ($3->idType != intType) yyerror("invalid index");
-                          	else if ($3->idData.ival >= c->arrayValue.size()) yyerror("index out of range");
+                          	else if ($3->idData.ival >= c->arrayValue.size()) yyerror("index out of range");                        
                           	$$ = new IDclass(c->arrayValue[$3->idData.ival]);
                         }
                         | function_invocation
@@ -363,6 +363,7 @@ expression              : ID
                           	if ($1->idType != $3->idType) yyerror("type not match"); /* type check */ 
                           	if ($1->idType != intType && $1->idType != realType) yyerror("operator error"); /* operator check */ 
 							IDclass *c = new IDclass(variableFlag,$1->idType,false); 
+                          	c->setValue (*$1 * *$3);
                           	$$ = c;
                         }
                         | expression '/' expression
@@ -371,6 +372,7 @@ expression              : ID
 							if ($1->idType != $3->idType) yyerror("type not match"); /* type check */ 
                           	if ($1->idType != intType && $1->idType != realType) yyerror("operator error"); /* operator check */ 
 							IDclass *c = new IDclass(variableFlag,$1->idType,false); 
+                          	c->setValue (*$1 / *$3);
                           	$$ = c;
                         }
                         | expression '+' expression
@@ -378,7 +380,8 @@ expression              : ID
                           	Trace("expression + expression");
                           	if ($1->idType != $3->idType) yyerror("type not match"); /* type check */ 
                           	if ($1->idType != intType && $1->idType != realType) yyerror("operator error"); /* operator check */ 
-							IDclass *c = new IDclass(variableFlag,$1->idType,false); 
+							IDclass *c = new IDclass(variableFlag,$1->idType,true);
+							c->setValue (*$1 + *$3);
                           	$$ = c;
                         }
                         | expression '-' expression
@@ -387,6 +390,7 @@ expression              : ID
                           	if ($1->idType != $3->idType) yyerror("type not match"); /* type check */ 
                           	if ($1->idType != intType && $1->idType != realType) yyerror("operator error"); /* operator check */ 
 							IDclass *c = new IDclass(variableFlag,$1->idType,false); 
+                          	c->setValue (*$1 - *$3);
                           	$$ = c;
                         }
                         | expression '<' expression
