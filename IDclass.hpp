@@ -1,66 +1,255 @@
+
 #include <iostream>
+#include <string>
+#include <vector>
 using namespace std;
 
-enum ID_Type{
-  intType,
-  realType,
-  boolType,
-  strType,
-  arrayType,
-  voidType
+struct ID_Data {
+	int ival = 0;
+	float fval = 0.0;
+	bool bval = false;
+	string sval = "";
 };
 
-enum ID_Flag {
-  constValueFlag,
-  constVariableFlag,
-  variableFlag,
-  functionFlag
+enum type {
+	intType,
+	realType,
+	boolType,
+	strType,
+	arrayType,
+	voidType,
+	None
 };
-union ID_Data{
-	int ival;
-	double dval;
-	bool bval;
-	string sval;
-	idData(){
-        ival = 0;
-        dval = 0.0;
-        bval = false;
-        sval = "";
-    }
-}
+
+enum idFlag {
+	constValueFlag,
+	constVariableFlag,
+	variableFlag,
+	functionFlag,
+	objectFlag
+};
+
 
 class IDclass
-{	
+{
 public:
-	ID_Data idValue;
+	string id;
+	ID_Data idData;
 	int idType;
 	int idFlag;
 	int idIndex;
 	bool init;
 	vector<IDclass> arrayValue;
 
-	IDclass(){
+	IDclass() {
 		idType = intType;
 		idFlag = variableFlag;
 		idIndex = 0;
 		init = false;
-	};
-	IDclass(IDclass id){
-		idType = id.idType;
-		idFlag = id.idFlag;
-		idIndex = idIndex;
-		init = id.init;
-		arrayValue = id.arrayValue;
 	}
-	~IDclass();	
-	void setIDValue(ID_Data x){
-		idValue = x;
-	};
-	void setIDType(int t){
-		idType = t;
-	};
-	void setIDFlag(int f){
-		idFlag = f;
-	};
+	IDclass(const IDclass& c) {
+		idType = c.idType;
+		idFlag = c.idFlag;
+		idIndex = c.idIndex;
+		id = c.id;
+		init = c.init;
+		setValue(c);
+	}
 
+	IDclass(int idF, int idT, bool idInit) {
+		idType = idT;
+		idFlag = idF;
+		init = idInit;
+	}
+	~IDclass() {};
+	void setValue(const IDclass &c) {
+		idData.ival = c.idData.ival;
+		idData.fval = c.idData.fval;
+		idData.bval = c.idData.bval;
+		idData.sval = c.idData.sval;
+		arrayValue = c.arrayValue;
+	}
 };
+
+IDclass *intConst(int val)
+{
+	IDclass* c = new IDclass(constValueFlag, intType, true);
+	c->idIndex = 0;
+	c->idData.ival = val;
+	return c;
+}
+
+IDclass *realConst(float val)
+{
+	IDclass* c = new IDclass(constValueFlag, realType, false);
+	c->idIndex = 0;
+	c->idData.fval = val;
+	return c;
+}
+
+IDclass *boolConst(bool val)
+{
+	IDclass* c = new IDclass(constValueFlag, boolType, false);
+	c->idIndex = 0;
+	c->idData.bval = val;
+	return c;
+}
+
+IDclass *strConst(string *val)
+{
+	IDclass* c = new IDclass(constValueFlag, strType, false);
+	c->idIndex = 0;
+	c->idData.sval = *val;
+	return c;
+}
+
+/*IDclass operator + (IDclass lhs, const IDclass& rhs)
+{
+	IDclass c = IDclass();
+	if(!(lhs.init && rhs.init))
+		return c;
+	switch(c.idType)
+	{
+		case intType: c.idData.ival=(lhs.ival + rhs.ival); break;
+		case realType: cidData.fval=(lhs.fval + rhs.fval); break;
+	}
+	return c;
+}
+
+IDclass operator - (IDclass lhs, const IDclass& rhs)
+{
+	IDclass c = IDclass();
+	if(!(lhs.init && rhs.init))
+		return c;
+	switch(c.idType)
+	{
+		case intType: c.idData.ival=(lhs.idData.ival - rhs.idData.ival); break;
+		case realType: c.idData.fval=(lhs.idData.fval - rhs.idData.fval); break;
+	}
+	return c;
+}
+
+IDclass operator * (IDclass lhs, const IDclass& rhs)
+{
+	IDclass c = IDclass();
+	if(!(lhs.init && rhs.init))
+		return c;
+	switch(c.idType)
+	{
+		case intType: c.idData.ival=(lhs.idData.ival * rhs.idData.ival); break;
+		case realType: c.idData.fval=(lhs.idData.fval * rhs.idData.fval); break;
+	}
+	return c;
+}
+
+IDclass operator / (IDclass lhs, const IDclass& rhs)
+{
+	IDclass c = IDclass();
+	if(!(lhs.init && rhs.init))
+		return c;
+	switch(c.idType)
+	{
+		case intType: c.idData.ival=(lhs.idData.ival / rhs.idData.ival); break;
+		case realType: c.idData.fval=(lhs.idData.fval / rhs.idData.fval); break;
+	}
+	return c;
+}
+
+IDclass operator < (IDclass lhs, const IDclass& rhs)
+{
+	IDclass c = IDclass(Boolean);
+	if(!(lhs.init && rhs.init))
+		return c;
+	switch()
+	{
+		case intType: c.set_boolean(lhs.ival < rhs.ival); break;
+		case realType: c.set_boolean(lhs.fval < rhs.fval); break;
+		case Boolean: c.set_boolean(lhs.bval < rhs.bval); break;
+	}
+	
+	return c;
+}
+
+IDclass operator > (IDclass lhs, const IDclass& rhs)
+{
+	IDclass c = IDclass(Boolean);
+	if(!(lhs.init && rhs.init))
+		return c;
+	switch()
+	{
+		case intType: c.set_boolean(lhs.ival > rhs.ival); break;
+		case realType: c.set_boolean(lhs.fval > rhs.fval); break;
+		case Boolean: c.set_boolean(lhs.bval > rhs.bval); break;
+	}
+	return c;
+}
+
+IDclass operator <= (IDclass lhs, const IDclass& rhs)
+{
+	IDclass c = IDclass(Boolean);
+	if(!(lhs.init && rhs.init))
+		return c;
+	switch()
+	{
+		case intType: c.set_boolean(lhs.ival <= rhs.ival); break;
+		case realType: c.set_boolean(lhs.fval <= rhs.fval); break;
+		case Boolean: c.set_boolean(lhs.bval <= rhs.bval); break;
+	}
+	return c;
+}
+
+IDclass operator == (IDclass lhs, const IDclass& rhs)
+{
+	IDclass c = IDclass(Boolean);
+	if(!(lhs.init && rhs.init))
+		return c;
+	switch()
+	{
+		case intType: c.set_boolean(lhs.ival == rhs.ival); break;
+		case realType: c.set_boolean(lhs.fval == rhs.fval); break;
+		case Boolean: c.set_boolean(lhs.bval == rhs.bval); break;
+	}
+	return c;
+}
+
+IDclass operator >= (IDclass lhs, const IDclass& rhs)
+{
+	IDclass c = IDclass(Boolean);
+	if(!(lhs.init && rhs.init))
+		return c;
+	switch()
+	{
+		case intType: c.set_boolean(lhs.ival >= rhs.ival); break;
+		case realType: c.set_boolean(lhs.fval >= rhs.fval); break;
+		case Boolean: c.set_boolean(lhs.bval >= rhs.bval); break;
+	}
+	return c;
+}
+
+IDclass operator != (IDclass lhs, const IDclass& rhs)
+{
+	IDclass c = IDclass(Boolean);
+	if(!(lhs.init && rhs.init))
+		return c;
+	switch()
+	{
+		case intType: c.set_boolean(lhs.ival != rhs.ival); break;
+		case realType: c.set_boolean(lhs.fval != rhs.fval); break;
+		case Boolean: c.set_boolean(lhs.bval != rhs.bval); break;
+	}
+	return c;
+}
+
+IDclass operator && (IDclass lhs, const IDclass& rhs)
+{
+	IDclass c = IDclass(Boolean);
+	if(!(lhs.init && rhs.init))
+		return c;
+	switch()
+	{
+		case intType: c.set_boolean(lhs.ival != rhs.ival); break;
+		case realType: c.set_boolean(lhs.fval != rhs.fval); break;
+		case Boolean: c.set_boolean(lhs.bval != rhs.bval); break;
+	}
+	return c;
+}*/
