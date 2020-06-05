@@ -3,6 +3,7 @@ using namespace std;
 #include "y.tab.hpp"
 #define LIST	strcat(buf,yytext)
 #define token(t) {LIST; if(tokenDebug)printf("<%s>\n",#t);return t;}
+#define printToken(t) {LIST; if(tokenDebug)printf("<%s>\n",#t);}
 #define tokenInteger(t,i) {LIST; if(tokenDebug)printf("<%s:%d>\n",#t,i);}
 #define tokenChar(t) { LIST; if(tokenDebug) printf("<'%c'>\n", t); }
 #define tokenString(t,s) {LIST; if(tokenDebug)printf("<%s:%s>\n",#t,s);}
@@ -66,12 +67,12 @@ var				{token(VAR);}
 while			{token(WHILE);}
 read      		{token(READ);}
 false           { 	
-					token(FALSE);
+					printToken(FALSE);
                     yylval.bval = false;
                     return BOOL_C;
                 }
 true            { 	
-					token(TRUE);
+					printToken(TRUE);
                     yylval.bval = true;
                     return BOOL_C;
                 }

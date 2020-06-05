@@ -207,11 +207,11 @@ stament:				ID '=' expression
 						}
 						|  PRINT '(' expression ')' 
 						{
-							Trace("print expression");
+							Trace("stament: print expression");
 						}
 						|  PRINTLN '(' expression ')'
 						{
-							Trace("println expression");
+							Trace("stament: println expression");
 						} 
 						|  READ ID
 						{
@@ -219,11 +219,11 @@ stament:				ID '=' expression
 						}
 						|  RETURN
 						{
-							Trace("return");
+							Trace("stament: return");
 						}
 						|  RETURN expression
 						{
-							Trace("return expression");
+							Trace("stament: return expression");
 						}
 						;
 block:					'{'
@@ -291,6 +291,7 @@ function_invocation:	ID
                           for (int i = 0; i < para.size(); ++i) {
                             if (para[i].idType != functions[functions.size() - 1].at(i).idType) yyerror("parameter type not match"); /* parameter type check */
                           }
+
                           $$ = c;
                           functions.pop_back();
                         }
