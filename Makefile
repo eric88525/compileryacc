@@ -10,5 +10,7 @@ lex.yy.cpp: scanner.l
 y.tab.cpp: parser.y
 	yacc -d parser.y -o y.tab.cpp
 
+test:
+	./my_parser test1
 clean:
 	rm my_parser lex.yy.* y.tab.*

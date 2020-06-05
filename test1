@@ -1,0 +1,27 @@
+object example {
+// constants and variables
+val a = 5
+var c : int
+var arr:int[10] 
+// procedure declaration
+def add(a:int, b:int): int
+{
+return a*b
+}
+// main statements
+def main ( )
+{
+if(a>5){
+  println (c)
+}
+while(a==5){
+  println (c)
+}
+for(c<- 1 to 10){
+  println (c)
+}
+arr[5] = 3
+c = a*3
+println (c)
+}
+}
