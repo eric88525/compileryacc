@@ -228,10 +228,10 @@ stament:				ID '=' expression
 						;
 block:					'{'
 						{
+							Trace("Block start");
 							symbolTable.push();
 						}
-						var_const_decs one_more_staments 
-						'}'
+						var_const_decs one_more_staments '}'
 						{
                           symbolTable.dump();
                           symbolTable.pop();
@@ -253,15 +253,15 @@ a_block_or_statement:	block
 						;
 loop:					WHILE '(' expression ')' 
 						{
+							Trace("while loop start");
 							if($3->idType != boolType) yyerror("Conditional not bool");
-						}
-						a_block_or_statement
+						} a_block_or_statement
 						{	
-							Trace("while loop");
+							Trace("while loop end");
 						}	
-						|   FOR '(' ID '<' '-' INT_C TO INT_C ')' 
+						|  FOR '(' ID '<' '-' INT_C TO INT_C ')' 
 						{
-							Trace("for loop");
+							Trace("For loop start");
 							IDclass* c = symbolTable.lookup(*$3);
 							if(c == NULL){
 								yyerror("variable not declare!");
@@ -270,10 +270,9 @@ loop:					WHILE '(' expression ')'
 							}else if(c->idType != intType){
 								yyerror("variable in for can only be int");
 							} 
-						}
-						a_block_or_statement
+						} a_block_or_statement
 						{
-							Trace("for loop end");
+							Trace("For loop end");
 						}
 						;
 function_invocation:	ID 
