@@ -22,6 +22,7 @@ INTEGER [0-9]+
 REAL [0-9]+\.[0-9]+
 IDERROR [0-9]+[A-Za-z]+
 NOTHING "//".*
+CHAR      \'([A-Za-z0-9])\'
 STRING                  (\"(\"\"|[^"\n])*\")
 %x C_COMMENT
 
@@ -97,6 +98,11 @@ true            {
          			printf("bad character:'%s'\n",yytext);
          			exit(-1);
          		}
+{CHAR}			{
+					yylval.cval = yytext[0];
+					tokenChar(char(yytext[0]));
+					return CHAR_C;
+				}
 {STRING} 		{
                     char s[MAX_LINE_LENG] = {0};
                     int idx = 0;

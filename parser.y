@@ -13,6 +13,7 @@ vector<vector<IDclass> > functions;
   int ival;
   float fval;
   bool bval;
+  char cval;
   string *sval;
   IDclass* idClassval;
   int type;
@@ -27,6 +28,7 @@ vector<vector<IDclass> > functions;
 %token <fval> FLOAT_C
 %token <bval> BOOL_C
 %token <sval> STRING_C
+%token <cval> CHAR_C
 %type <idClassval> const_val expression function_invocation
 /*NT return type*/
 %type <type> var_type return_type 
@@ -35,7 +37,7 @@ vector<vector<IDclass> > functions;
 %left OR
 %left AND
 %left '!'
-%left '<' LE EQ GE '>' NEQ
+%left '<' LE EE GE '>' NE
 %left '+' '-'
 %left '*' '/'
 %nonassoc UMINUS
@@ -123,6 +125,10 @@ var_type                : INT
                         {
                           $$ = strType;
                         }
+                        | CHAR
+                        {
+                          $$ = charType;
+                        }
                         ;
 method_decs:			method_dec method_decs
 						| method_dec
@@ -190,7 +196,7 @@ stament:				ID '=' expression
 								c->setValue(*$3);
 							}
 						}
-						|  ID '[' INT_C ']' '=' expression
+						|  ID '[' expression ']' '=' expression
 						{
 							Trace("statement: variable[] assignment");
 							IDclass* c = symbolTable.lookup(*$1);
@@ -200,9 +206,11 @@ stament:				ID '=' expression
 								yyerror("this is not array");
 							}else if(c->idFlag!=variableFlag){
 								yyerror("this is not variable array");
+							}else if($3->idType!=intType){
+								yyerror("ID '[' expression ']' '=' expression , exp is not int");
 							}else{
 								c->init = true;
-								c->arrayValue[$3] = *$6;
+								c->arrayValue[$3->idData.ival] = *$6;
 							}
 						}
 						|  PRINT '(' expression ')' 
@@ -233,8 +241,8 @@ block:					'{'
 						}
 						var_const_decs one_more_staments '}'
 						{
-                          symbolTable.dump();
-                          symbolTable.pop();
+                        	symbolTable.dump();
+                        	symbolTable.pop();
                         }
                         ;
 conditional:			IF '(' expression ')' a_block_or_statement ELSE a_block_or_statement	
@@ -331,6 +339,10 @@ const_val               : INT_C
                         {
                           	$$ = strConst($1);
                         }
+                        | CHAR_C
+                        {
+                        	$$ = charConst($1);
+                        }
                         ;
 /* expression */
 expression              : ID
@@ -360,108 +372,115 @@ expression              : ID
                         | expression '*' expression
                         {
                           	Trace("expression * expression");
-                          	if ($1->idType != $3->idType) yyerror("type not match"); /* type check */ 
-                          	if ($1->idType != intType && $1->idType != realType) yyerror("operator error"); /* operator check */ 
-							IDclass *c = new IDclass(variableFlag,$1->idType,false); 
-                          	c->setValue (*$1 * *$3);
+                          	if ($1->idType != $3->idType) yyerror("* type not match"); /* type check */ 
+                          	if ($1->idType != intType && $1->idType != realType) yyerror(" * operator error"); /* operator check */ 
+							IDclass *c = new IDclass(variableFlag,$1->idType,true); 
+                          	//c->setValue (*$1 * *$3);
                           	$$ = c;
                         }
                         | expression '/' expression
                         {
                           	Trace("expression / expression");
-							if ($1->idType != $3->idType) yyerror("type not match"); /* type check */ 
-                          	if ($1->idType != intType && $1->idType != realType) yyerror("operator error"); /* operator check */ 
-							IDclass *c = new IDclass(variableFlag,$1->idType,false); 
-                          	c->setValue (*$1 / *$3);
+							if ($1->idType != $3->idType) yyerror("/type not match"); /* type check */ 
+                          	if ($1->idType != intType && $1->idType != realType) yyerror("/ operator error"); /* operator check */ 
+							IDclass *c = new IDclass(variableFlag,$1->idType,true); 
+                          	//c->setValue (*$1 / *$3);
                           	$$ = c;
                         }
                         | expression '+' expression
                         {
                           	Trace("expression + expression");
-                          	if ($1->idType != $3->idType) yyerror("type not match"); /* type check */ 
-                          	if ($1->idType != intType && $1->idType != realType) yyerror("operator error"); /* operator check */ 
+                          	if ($1->idType != $3->idType) yyerror("+ type not match"); /* type check */ 
+                          	if ($1->idType != intType && $1->idType != realType) yyerror("+ operator error"); /* operator check */ 
 							IDclass *c = new IDclass(variableFlag,$1->idType,true);
-							c->setValue (*$1 + *$3);
+							//c->setValue (*$1 + *$3);
                           	$$ = c;
                         }
                         | expression '-' expression
                         {
                           	Trace("expression - expression");
-                          	if ($1->idType != $3->idType) yyerror("type not match"); /* type check */ 
-                          	if ($1->idType != intType && $1->idType != realType) yyerror("operator error"); /* operator check */ 
-							IDclass *c = new IDclass(variableFlag,$1->idType,false); 
-                          	c->setValue (*$1 - *$3);
+                          	if ($1->idType != $3->idType) yyerror("- type not match"); /* type check */ 
+                          	if ($1->idType != intType && $1->idType != realType) yyerror("- operator error"); /* operator check */ 
+							IDclass *c = new IDclass(variableFlag,$1->idType,true); 
+                          	//c->setValue (*$1 - *$3);
                           	$$ = c;
                         }
                         | expression '<' expression
                         {
                           	Trace("expression < expression");
-                          	if ($1->idType != $3->idType) yyerror("type not match"); /* type check */	
-                          	if ($1->idType != intType && $1->idType != realType) yyerror("operator error"); /* operator check */  
-							IDclass *c = new IDclass(variableFlag,boolType,false); 
+                          	if ($1->idType != $3->idType) yyerror("< type not match"); /* type check */	
+                          	if ($1->idType != intType && $1->idType != realType && $1->idType != boolType && $1->idType != charType) yyerror("< operator error"); /* operator check */  
+							IDclass *c = new IDclass(variableFlag,boolType,true); 
+							//c->setValue (*$1 < *$3);
                           	$$ = c;	
                         }
                         | expression LE expression
                         {
                           	Trace("expression <= expression");
-							if ($1->idType != $3->idType) yyerror("type not match"); /* type check */	
-                          	if ($1->idType != intType && $1->idType != realType) yyerror("operator error"); /* operator check */  
-							IDclass *c = new IDclass(variableFlag,boolType,false); 
+							if ($1->idType != $3->idType) yyerror("LE type not match"); /* type check */	
+                          	if ($1->idType != intType && $1->idType != realType && $1->idType != boolType && $1->idType != charType) yyerror("LE operator error"); /* operator check */  
+							IDclass *c = new IDclass(variableFlag,boolType,true); 
+							//c->setValue (*$1 <= *$3);
                           	$$ = c;	                    
                         }
                         | expression EE expression
                         {
                             Trace("expression == expression");
-                            if ($1->idType != $3->idType) yyerror("type not match"); /* type check */	
-                          	if ($1->idType != intType && $1->idType != realType) yyerror("operator error"); /* operator check */  
-							IDclass *c = new IDclass(variableFlag,boolType,false); 
+                            if ($1->idType != $3->idType) yyerror("EE type not match"); /* type check */	                         	
+							IDclass *c = new IDclass(variableFlag,boolType,true); 
+							//c->setValue (*$1 == *$3);
                           	$$ = c;	
                         }
                         | expression GE expression
                         {
                           	Trace("expression >= expression");
-                          	if ($1->idType != $3->idType) yyerror("type not match"); /* type check */	
-                          	if ($1->idType != intType && $1->idType != realType) yyerror("operator error"); /* operator check */  
-							IDclass *c = new IDclass(variableFlag,boolType,false); 
+                          	if ($1->idType != $3->idType) yyerror("GE type not match"); /* type check */	
+                          	if ($1->idType != intType && $1->idType != realType && $1->idType != boolType && $1->idType != charType) yyerror("GE operator error"); /* operator check */  
+							IDclass *c = new IDclass(variableFlag,boolType,true); 
+							//c->setValue (*$1 >= *$3);
                           	$$ = c;	
                         }
                         | expression '>' expression
                         {
                           	Trace("expression > expression");
-                          	if ($1->idType != $3->idType) yyerror("type not match"); /* type check */	
-                          	if ($1->idType != intType && $1->idType != realType) yyerror("operator error"); /* operator check */  
+                          	if ($1->idType != $3->idType) yyerror("> type not match"); /* type check */	
+                          	if ($1->idType != intType && $1->idType != realType && $1->idType != boolType && $1->idType != charType) yyerror("> operator error"); /* operator check */  
 							IDclass *c = new IDclass(variableFlag,boolType,false); 
+							//c->setValue (*$1 > *$3);
                           	$$ = c;	
                         }
                         | expression NE expression
                         {
                           	Trace("expression != expression");
-                          	if ($1->idType != $3->idType) yyerror("type not match"); /* type check */	
-                          	if ($1->idType != intType && $1->idType != realType) yyerror("operator error"); /* operator check */  
-							IDclass *c = new IDclass(variableFlag,boolType,false); 
+                          	if ($1->idType != $3->idType) yyerror("NE type not match"); /* type check */              
+							IDclass *c = new IDclass(variableFlag,boolType,true); 
+							//c->setValue (*$1 != *$3);
                           	$$ = c;	
                         }
                         | '!' expression
                         {
                           	Trace("!expression");
-                          	if ($2->idType != boolType) yyerror("operator error"); /* operator check */
-                          	IDclass *c = new IDclass(variableFlag,boolType,false);
+                          	if ($2->idType != boolType) yyerror("!operator error"); /* operator check */                                   
+                          	IDclass *c = new IDclass(variableFlag,boolType,true); 
+                          	//c->idData.bval = !$2->idData.bval;
                           	$$ = c;
                         }
                         | expression AND expression
                         {
 	                        Trace("expression && expression");
-	                        if ($1->idType != $3->idType) yyerror("type not match"); /* type check */
-	                        if ($1->idType != boolType) yyerror("operator error"); /* operator check */
-	                        IDclass *c = new IDclass(variableFlag,boolType,false);
+	                        if ($1->idType != $3->idType) yyerror("AND type not match"); /* type check */
+	                        if ($1->idType != boolType) yyerror("AND operator error"); /* operator check */
+	                        IDclass *c = new IDclass(variableFlag,boolType,true);
+                          	//c->setValue (*$1 && *$3);
                           	$$ = c;
                         }
                         | expression OR expression
                         {
                           	Trace("expression || expression");
-                          	if ($1->idType != $3->idType) yyerror("type not match"); /* type check */
-	                        if ($1->idType != boolType) yyerror("operator error"); /* operator check */
-	                        IDclass *c = new IDclass(variableFlag,boolType,false);
+                          	if ($1->idType != $3->idType) yyerror("OR type not match"); /* type check */
+	                        if ($1->idType != boolType) yyerror("OR operator error"); /* operator check */
+	                        IDclass *c = new IDclass(variableFlag,boolType,true);
+                          	//c->setValue (*$1 || *$3);
                           	$$ = c;
                         }
                         | '(' expression ')'

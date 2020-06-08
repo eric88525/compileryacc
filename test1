@@ -3,8 +3,9 @@ object example {
 val a = 5
 var c : int
 var arr:int[10] 
+var d = 10
 // procedure declaration
-def add(a:int, b:int): int
+def add(a:int, b:int, z:char): int
 {
 return a*b
 }
@@ -14,14 +15,17 @@ def main ( )
 if(a>5){
   println (c)
 }
-while(a==5){
+while(a==5 || a==3 && a!=4){
   println (c)
 }
 for(c<- 1 to 10){
   println (c)
 }
-arr[5] = 3
+
+arr[a] = 3
+
 c = a*3
+d = a+arr[6]
 println (c)
 }
 }

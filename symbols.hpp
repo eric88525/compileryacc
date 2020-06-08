@@ -76,6 +76,7 @@ public:
 			case intType: s += "int\t"; break;
 			case realType: s += "float\t"; break;
 			case boolType: s += "bool\t"; break;
+			case charType: s+= "char\t"; break;
 			case strType: s += "str\t"; break;
 			case arrayType: s += "array\t"; break;
 			case voidType: s += "void\t"; break;
@@ -87,6 +88,7 @@ public:
 				case realType: s += to_string(info.idData.fval); break;
 				case boolType: s += (info.idData.bval) ? "true" : "false"; break;
 				case strType: s += info.idData.sval; break;
+				case charType: s+= info.idData.cval; break;
 				}
 			}
 			if (info.idFlag == functionFlag) {
@@ -97,6 +99,7 @@ public:
 					case realType: s += "float "; break;
 					case boolType: s += "bool "; break;
 					case strType: s += "str "; break;
+					case charType: s+= "char";break;
 					}
 				}
 				s += "}";
@@ -108,6 +111,7 @@ public:
 				case realType: s += "float, "; break;
 				case boolType: s += "bool, "; break;
 				case strType: s += "str, "; break;
+				case charType: s+= "char, ";break;
 				}
 				s += to_string(info.arrayValue.size()) + " }";
 			}
