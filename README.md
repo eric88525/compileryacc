@@ -5,4 +5,9 @@
 # Do the test
 + make test
 # What i change?
-+ 基本上全部重寫了，除了scanner.l辨認token部分保留，其他全刪光
++ 新增symbols.hpp 用來建造symboltable 和  symboltablelist
++ 新增IDclass.hpp 
++ scanner部分，修正註解的bug，新增printToken
++ 更多細節可參考commit紀錄
+# Git link
++ https://github.com/eric88525/compileryacc.git
