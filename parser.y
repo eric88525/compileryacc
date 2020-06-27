@@ -6,6 +6,7 @@ int Opt_P = 1;
 void yyerror(string s);
 symboltableList symbolTable;
 vector<vector<IDclass> > functions;
+bool mainFlag = false;
 %}
 
 /* yylval */
@@ -135,6 +136,8 @@ method_decs:			method_dec method_decs
 						;
 method_dec:				DEF ID 
 						{
+							if(*$2 == "main")
+								mainFlag = true;
 							Trace("DEF ID '(' args ')' return_type");
 							IDclass *c = new IDclass(functionFlag,None,false);
 							if(symbolTable.insert(*$2,*c)==-1) yyerror("function redefine");
@@ -498,14 +501,14 @@ void yyerror(string s){
 
 int main(int argc, char *argv[])
 {
-if(argc==2){
-	yyin = fopen(argv[1],"r");
-}else{
-	puts("Format error!");
-	return 0 ;
-}
-
-
-yyparse();
-
+	if(argc==2){
+		yyin = fopen(argv[1],"r");
+	}else{
+		puts("Format error!");
+		return 0 ;
+	}
+	yyparse();
+	if(!mainFlag){
+		yyerror("no main exist!");
+	}
 }
